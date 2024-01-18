@@ -6,7 +6,9 @@ import Filter from './Phonebook/Filter';
 import css from './Phonebook/Form.module.css';
 
 export default function App() {
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(
+    () => JSON.parse(window.localStorage.getItem('contacts')) ?? []
+  );
   const [filter, setFilter] = useState('');
 
   const formSubmitHandler = ({ name, number }) => {
@@ -26,14 +28,11 @@ export default function App() {
     };
 
     let newContacts = [...contacts, contact];
-
-    window.localStorage.setItem('contacts', JSON.stringify(newContacts));
     setContacts(newContacts);
   };
 
   const deleteContact = contactId => {
     let newContacts = contacts.filter(contact => contact.id !== contactId);
-    window.localStorage.setItem('contacts', JSON.stringify(newContacts));
     setContacts(newContacts);
   };
 
@@ -47,14 +46,9 @@ export default function App() {
       contact.name.toLowerCase().includes(normalizedFilter)
     );
   };
-
   useEffect(() => {
-    const savedContacts = localStorage.getItem('contacts');
-
-    if (savedContacts) {
-      setContacts(JSON.parse(savedContacts));
-    }
-  }, []);
+    window.localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
   return (
     <div className={css.container}>
